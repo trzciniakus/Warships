@@ -28,7 +28,7 @@ public class Battleships {
         System.out.println("**** Welcome to Battle Ships game ****\n");
         System.out.println("Right now, the sea is empty\n");
         printGrid();
-        System.out.println("Please deploy your ships:\n");
+        System.out.println("Deploy your ships:");
         while (playerShips < fleetSize) {
             deployPlayerShip();
         }
@@ -49,41 +49,18 @@ public class Battleships {
     }
 
     private void playerGuess() {
-        Scanner scanner = new Scanner(System.in);
-        int x;
-        int y;
-
-        while (true) {
-            System.out.print("Enter X coordinate:");
-            if (scanner.hasNextInt()) {
-                x = scanner.nextInt();
-                if (x >= 0 && x < gridSize) {
-                    break;
-                }
-            }
-            scanner.nextLine();
-            System.out.println("Invalid coordinate");
-        }
-
-        while (true) {
-            System.out.print("Enter Y coordinate:");
-            if (scanner.hasNextInt()) {
-                y = scanner.nextInt();
-                if (y >= 0 && y < gridSize) {
-                    break;
-                }
-            }
-            scanner.nextLine();
-            System.out.println("Invalid coordinate");
-        }
+        String inputMessage = "Enter X coordinate:";
+        int x = getUserInputCoordinate(inputMessage);
+        inputMessage = "Enter Y coordinate:";
+        int y = getUserInputCoordinate(inputMessage);
 
         Field guessedField = grid.get(x + Integer.toString(y));
-        if(guessedField.revealed){
+        if (guessedField.revealed) {
             System.out.println("The field has been already revealed. You need to choose another one.");
             playerGuess();
         } else {
             guessedField.revealed = true;
-            switch (guessedField.shipOwner){
+            switch (guessedField.shipOwner) {
                 case 0:
                     System.out.println("You missed.");
                     break;
@@ -97,7 +74,22 @@ public class Battleships {
                     break;
             }
         }
+    }
 
+    private int getUserInputCoordinate(String displayedMessage) {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.print(displayedMessage);
+            if (scanner.hasNextInt()) {
+                int userEntry = scanner.nextInt();
+                if (userEntry >= 0 && userEntry < gridSize) {
+                    return userEntry;
+                }
+            }
+            scanner.nextLine();
+            System.out.println("Invalid coordinate");
+        }
     }
 
     private void computerGuess() {
@@ -119,33 +111,11 @@ public class Battleships {
     }
 
     private void deployPlayerShip() {
-        Scanner scanner = new Scanner(System.in);
-        int x;
-        int y;
 
-        while (true) {
-            System.out.print("Enter X coordinate for your " + (playerShips + 1) + ". ship:");
-            if (scanner.hasNextInt()) {
-                x = scanner.nextInt();
-                if (x >= 0 && x < gridSize) {
-                    break;
-                }
-            }
-            scanner.nextLine();
-            System.out.println("Invalid coordinate");
-        }
-
-        while (true) {
-            System.out.print("Enter Y coordinate for your " + (playerShips + 1) + ". ship:");
-            if (scanner.hasNextInt()) {
-                y = scanner.nextInt();
-                if (y >= 0 && y < gridSize) {
-                    break;
-                }
-            }
-            scanner.nextLine();
-            System.out.println("Invalid coordinate");
-        }
+        String inputMessage = "Enter X coordinate for your " + (playerShips + 1) + ". ship:";
+        int x = getUserInputCoordinate(inputMessage);
+        inputMessage = "Enter Y coordinate for your " + (playerShips + 1) + ". ship:";
+        int y = getUserInputCoordinate(inputMessage);
 
         if (deployShip(x, y, 1)) {
             playerShips++;
@@ -163,7 +133,6 @@ public class Battleships {
 
         if (deployShip(x, y, 2)) {
             computerShips++;
-            System.out.println("Computer ship " + computerShips + " has been deployed");
         } else {
             deployComputerShip();
         }
@@ -184,7 +153,7 @@ public class Battleships {
         for (int i = 0; i < gridSize; i++) {
             System.out.print(i + " |");
             for (int j = 0; j < gridSize; j++) {
-                Field currentField = grid.get(i + Integer.toString(j));
+                Field currentField = grid.get(j + Integer.toString(i));
                 System.out.print(currentField.revealed || (currentField.shipOwner == 1)
                         ? playerMarkers.get(currentField.shipOwner) : " ");
             }
@@ -194,7 +163,6 @@ public class Battleships {
         printXAxe.run();
 
         System.out.println("\nYour ships: " + playerShips + " | Computer ships: " + computerShips + "\n");
-
     }
 
     private boolean deployShip(int x, int y, int player) {
